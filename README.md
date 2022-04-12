@@ -1,5 +1,7 @@
 ![Boas Práticas Laravel](/images/logo-english.png?raw=true)
 
+> Talvez você deva checar o [real-world Laravel example application](https://github.com/alexeymezenin/laravel-realworld-example-app)
+
 O que é descrito aqui não é uma adaptação ao principio SOLID, padrões e etc. Aqui você irá encontrar as melhores práticas que geralmente são ignoradas em um projeto Laravel na vida real.
 
 ## Conteúdo
@@ -19,6 +21,8 @@ O que é descrito aqui não é uma adaptação ao principio SOLID, padrões e et
 [Atribuição em massa](#atribuição-em-massa)
 
 [Não executar consultas no Blade templates e usar eager loading (N + 1)](#não-executar-consultas-no-blade-templates-e-usar-eager-loading-n--1)
+
+[Use chunk para tarefas de dados pesadas](#use-chunk-para-tarefas-de-dados-pesadas)
 
 [Comente seu código, mas prefira um método descritivo e nomes de variáveis em vez de comentários](#comente-seu-código-mas-prefira-um-método-descritivo-e-nomes-de-variáveis-em-vez-de--comentários)
 
@@ -148,7 +152,7 @@ Bom:
 
 ```php
 public function store(PostRequest $request)
-{    
+{
     ....
 }
 
@@ -325,6 +329,30 @@ $users = User::with('profile')->get();
 
 [🔝 Voltar para o início](#conteúdo)
 
+### **Use chunk para tarefas de dados pesadas**
+
+Ruim ():
+
+```php
+$users = $this->get();
+
+foreach ($users as $user) {
+    ...
+}
+```
+
+Bom:
+
+```php
+$this->chunk(500, function ($users) {
+    foreach ($users as $user) {
+        ...
+    }
+});
+```
+
+[🔝 Voltar para o início](#conteúdo)
+
 ### **Comente seu código, mas prefira um método descritivo e nomes de variáveis em vez de comentários**
 
 Ruim:
@@ -418,7 +446,7 @@ Templates | Blade | Twig
 Trabalhando com dados | Laravel collections | Arrays
 Validação de formulários | Request classes | pacotes de terceiros, validação no controller
 Autenticação | Nativo | pacotes de terceiros, sua propria solução
-Autenticação API | Laravel Passport | JWT e pacotes OAuth 
+Autenticação API | Laravel Passport | JWT e pacotes OAuth
 Criar API | Nativo | Dingo API e similares
 Trabalhando com estrutura de DB | Migrações | Trabalhar com banco diretamente
 Localização | Nativo | pacotes de terceiros
